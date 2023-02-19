@@ -13,13 +13,13 @@ struct mesh {
             if (fscanf(file, "%s", line) == EOF) break;
 
             if (strcmp(line, "v") == 0) {
-                const auto vertex {glm::tvec3<float>(0.0)};
+                auto vertex {glm::tvec3<float>(0.0)};
 
                 fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
 
                 m_temp_vertex.emplace_back(vertex);
             } else if (strcmp(line, "vn") == 0) {
-                const auto normal {glm::tvec3<float>(0.0)};
+                auto normal {glm::tvec3<float>(0.0)};
 
                 fscanf(file, "%f %f %f\n", &normal.x, &normal.y, &normal.z);
 
