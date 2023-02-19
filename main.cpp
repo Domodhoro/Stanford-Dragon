@@ -27,7 +27,6 @@
 extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -64,6 +63,21 @@ constexpr auto WINDOW_HEIGHT {800};
 constexpr auto WINDOW_TITLE  {"Stanford Dragon"};
 constexpr auto CAMERA_FOV    {72.0f};
 
+template<typename T>
+struct vec3 {
+    T x;
+    T y;
+    T z;
+};
+
+template<typename T>
+struct vec3_n {
+    vec3<T> v;
+    T nx;
+    T ny;
+    T nz;
+};
+
 enum struct CAMERA_MOVEMENTS : int {
     FORWARD = 0,
     BACKWARD,
@@ -73,14 +87,25 @@ enum struct CAMERA_MOVEMENTS : int {
 
 #include "./src/camera.hpp"
 #include "./src/dragon.hpp"
-#include "./src/stb_image_wrapper.hpp"
 
 static void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-static void keyboardCallback(GLFWwindow *window) {
+static void keyboard_callback(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
+}
+
+static void load_window_icon(GLFWwindow *window, const char *icon_path) {
+    GLFWimage img;
+
+    img.pixels = stbi_load(icon_path, &img.width, &img.height, 0, 4);
+
+    if (img.pixels == nullptr) my_exception {__FILE__, __LINE__, "falha ao carregar ícone da janela de visualização"};
+
+    glfwSetWindowIcon(window, 1, &img);
+
+    stbi_image_free(img.pixels);
 }
 
 int main(int argc, char *argv[]) {
@@ -112,7 +137,7 @@ int main(int argc, char *argv[]) {
 
     glfwSetCursorPos(window, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
 
-    stb_image_wrapper::load_window_icon(window, "./img/icon.bmp");
+    load_window_icon(window, "./img/icon.bmp");
 
     glewExperimental = true;
 
@@ -121,35 +146,35 @@ int main(int argc, char *argv[]) {
     camera::camera cam {WINDOW_WIDTH, WINDOW_HEIGHT};
 
     cam.set_FOV     (CAMERA_FOV);
-    cam.set_position({0.0f, 0.0f, -2.5f});
+    cam.set_position({0.0f, 0.0f, -2.0f});
 
-    Dragon dragon {};
+    shader::shader_program dragon_shader {"./glsl/dragon_vertex.glsl", "./glsl/dragon_fragment.glsl"};
 
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
+    dragon::dragon my_dragon {};
+
+    glEnable   (GL_DEPTH_TEST);
+    glEnable   (GL_CULL_FACE);
     glFrontFace(GL_CCW);
 
-    float lastFrame = 0.0f, currentFrame = 0.0f, FPS = 60.0f;
+    auto last_frame    {0.0f};
+    auto current_frame {0.0f};
 
     while (!glfwWindowShouldClose(window)) {
-        currentFrame = static_cast<float>(glfwGetTime());
+        current_frame = glfwGetTime();
 
-        if ((currentFrame - lastFrame) > (1.0f / FPS)) {
+        if ((current_frame - last_frame) > (1.0f / FPS)) {
+            keyboard_callback(window);
+
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
 
-            glm::mat4 projectionMatrix = cam.get_projection_matrix();
-            glm::mat4 viewMatrix       = cam.get_view_matrix();
-
-            dragon.render(projectionMatrix, viewMatrix, {0.0f, 0.0f, -2.5f});
+            my_dragon.render(dragon_shader, cam);
 
             glfwSwapBuffers(window);
             glfwPollEvents();
 
-            lastFrame = currentFrame;
+            last_frame = current_frame;
         }
-
-        keyboardCallback(window);
     }
 
     glfwTerminate();

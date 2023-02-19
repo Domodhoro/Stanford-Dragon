@@ -21,14 +21,14 @@ struct camera {
     glm::mat4 get_view_matrix      () const { return glm::lookAt<float>     (m_Position, m_Position + m_Front, m_Up); }
 
 protected:
-    float m_aspect      {1.0f};
-    float m_FOV         {60.0f};
-    float m_near        {0.001f};
-    float m_far         {1000.0f};
+    float m_aspect{1.0f};
+    float m_FOV   {60.0f};
+    float m_near  {0.001f};
+    float m_far   {1000.0f};
 
-    glm::tvec3<float> m_Front     {0.0f, 0.0f, 1.0f};
-    glm::tvec3<float> m_Position  {0.0f};
-    glm::tvec3<float> m_Up        {0.0f, 1.0f, 0.0f};
+    glm::tvec3<float> m_Front   {0.0f, 0.0f, 1.0f};
+    glm::tvec3<float> m_Position{0.0f};
+    glm::tvec3<float> m_Up      {0.0f, 1.0f, 0.0f};
 };
 
 }
