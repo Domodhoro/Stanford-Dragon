@@ -101,7 +101,7 @@ static void load_window_icon(GLFWwindow *window, const char *icon_path) {
 
     img.pixels = stbi_load(icon_path, &img.width, &img.height, 0, 4);
 
-    if (img.pixels == nullptr) my_exception {__FILE__, __LINE__, "falha ao carregar ícone da janela de visualização"};
+    if (img.pixels == nullptr) my_exception {__FILE__, __LINE__, "falha ao carregar Ã­cone da janela de visualizaÃ§Ã£o"};
 
     glfwSetWindowIcon(window, 1, &img);
 
@@ -123,7 +123,7 @@ int main(int argc, char *argv[]) {
         glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, nullptr, nullptr)
     };
 
-    if (window == nullptr) my_exception {__FILE__, __LINE__, "falha ao criar a janela de visualização"};
+    if (window == nullptr) my_exception {__FILE__, __LINE__, "falha ao criar a janela de visualizaÃ§Ã£o"};
 
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -163,10 +163,10 @@ int main(int argc, char *argv[]) {
         current_frame = glfwGetTime();
 
         if ((current_frame - last_frame) > (1.0f / FPS)) {
-            keyboard_callback(window);
-
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+
+            keyboard_callback(window);
 
             my_dragon.render(dragon_shader, cam);
 
