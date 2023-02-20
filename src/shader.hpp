@@ -18,8 +18,7 @@ struct shader_program {
 
     ~shader_program() { glDeleteProgram(m_shader); }
 
-    void use() const { glUseProgram(m_shader); }
-
+    void use      ()                                                const { glUseProgram(m_shader); }
     void set_bool (const char *name, bool value)                    const { glUniform1i       (glGetUniformLocation(m_shader, name), static_cast<int>(value)); }
     void set_int  (const char *name, int value)                     const { glUniform1i       (glGetUniformLocation(m_shader, name), value); }
     void set_float(const char *name, float value)                   const { glUniform1f       (glGetUniformLocation(m_shader, name), value); }

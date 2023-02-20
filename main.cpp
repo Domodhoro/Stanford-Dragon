@@ -150,6 +150,9 @@ int main(int argc, char *argv[]) {
 
     dragon::dragon my_dragon {};
 
+    my_dragon.set_light_position({-3.0f, 4.0f,-5.0f});
+    my_dragon.set_light_color   ({ 0.3f, 0.8f, 0.4f});
+
     glEnable   (GL_DEPTH_TEST);
     glEnable   (GL_CULL_FACE);
     glFrontFace(GL_CCW);

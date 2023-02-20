@@ -1,8 +1,8 @@
 #version 300 es
 
 out highp vec4      FragColor;
-in highp vec3       FragNormal;
-in highp vec3       FragPos;
+in  highp vec3      FragNormal;
+in  highp vec3      FragPos;
 uniform highp vec3  light_position;
 uniform highp vec3  light_color;
 
