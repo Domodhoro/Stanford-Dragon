@@ -73,9 +73,7 @@ struct vec3 {
 template<typename T>
 struct vec3_n {
     vec3<T> v;
-    T nx;
-    T ny;
-    T nz;
+    vec3<T> n;
 };
 
 enum struct CAMERA_MOVEMENTS : int {
@@ -101,7 +99,7 @@ static void load_window_icon(GLFWwindow *window, const char *icon_path) {
 
     img.pixels = stbi_load(icon_path, &img.width, &img.height, 0, 4);
 
-    if (img.pixels == nullptr) my_exception {__FILE__, __LINE__, "falha ao carregar Ã­cone da janela de visualizaÃ§Ã£o"};
+    if (img.pixels == nullptr) my_exception {__FILE__, __LINE__, "falha ao carregar ícone da janela de visualização"};
 
     glfwSetWindowIcon(window, 1, &img);
 
@@ -123,15 +121,15 @@ int main(int argc, char *argv[]) {
         glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, nullptr, nullptr)
     };
 
-    if (window == nullptr) my_exception {__FILE__, __LINE__, "falha ao criar a janela de visualizaÃ§Ã£o"};
+    if (window == nullptr) my_exception {__FILE__, __LINE__, "falha ao criar a janela de visualização"};
 
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     auto mode {glfwGetVideoMode(glfwGetPrimaryMonitor())};
 
-    auto window_pos_x {(mode->width  - WINDOW_WIDTH)  / 2};
-    auto window_pos_y {(mode->height - WINDOW_HEIGHT) / 2};
+    const auto window_pos_x {(mode->width  - WINDOW_WIDTH)  / 2};
+    const auto window_pos_y {(mode->height - WINDOW_HEIGHT) / 2};
 
     glfwSetWindowPos(window, window_pos_x, window_pos_y);
 
@@ -168,7 +166,11 @@ int main(int argc, char *argv[]) {
 
             keyboard_callback(window);
 
-            my_dragon.render(dragon_shader, cam);
+            auto model {glm::mat4(1.0f)};
+
+            model = rotate(model, glm::radians<float>(glfwGetTime() * 45.0f), {0.0f, 1.0f, 0.0f});
+
+            my_dragon.render(dragon_shader, cam, model);
 
             glfwSwapBuffers(window);
             glfwPollEvents();
