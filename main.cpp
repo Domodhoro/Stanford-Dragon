@@ -99,7 +99,7 @@ static void load_window_icon(GLFWwindow *window, const char *icon_path) {
 
     img.pixels = stbi_load(icon_path, &img.width, &img.height, 0, 4);
 
-    if (img.pixels == nullptr) my_exception {__FILE__, __LINE__, "falha ao carregar ícone da janela de visualização"};
+    if (img.pixels == nullptr) my_exception {__FILE__, __LINE__, "falha ao carregar Ã­cone da janela de visualizaÃ§Ã£o"};
 
     glfwSetWindowIcon(window, 1, &img);
 
@@ -121,7 +121,7 @@ int main(int argc, char *argv[]) {
         glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, nullptr, nullptr)
     };
 
-    if (window == nullptr) my_exception {__FILE__, __LINE__, "falha ao criar a janela de visualização"};
+    if (window == nullptr) my_exception {__FILE__, __LINE__, "falha ao criar a janela de visualizaÃ§Ã£o"};
 
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -182,7 +182,8 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    glfwTerminate();
+    glfwDestroyWindow(window);
+    glfwTerminate    ();
 
     return 0;
 }
