@@ -58,8 +58,8 @@ struct my_exception {
 };
 
 constexpr auto FPS           {60};
-constexpr auto WINDOW_WIDTH  {1300};
-constexpr auto WINDOW_HEIGHT {800};
+constexpr auto WINDOW_WIDTH  {800};
+constexpr auto WINDOW_HEIGHT {500};
 constexpr auto WINDOW_TITLE  {"Stanford Dragon"};
 constexpr auto CAMERA_FOV    {72.0f};
 
