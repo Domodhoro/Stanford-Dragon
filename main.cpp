@@ -145,7 +145,7 @@ int main(int argc, char *argv[]) {
     cam.set_FOV     (CAMERA_FOV);
     cam.set_position({0.0f, 0.0f, -2.0f});
 
-    shader::shader_program dragon_shader {"./glsl/dragon_vertex.glsl", "./glsl/dragon_fragment.glsl"};
+    shader::shader dragon_shader {"./glsl/dragon_vertex.glsl", "./glsl/dragon_fragment.glsl"};
 
     dragon::dragon my_dragon {};
 
@@ -164,7 +164,7 @@ int main(int argc, char *argv[]) {
 
         if ((current_frame - last_frame) > (1.0f / FPS)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+            glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
 
             keyboard_callback(window);
 

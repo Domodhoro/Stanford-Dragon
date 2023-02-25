@@ -17,7 +17,7 @@ struct dragon {
     void set_light_position(const glm::tvec3<float> light_position) { m_light_position = light_position; }
     void set_light_color   (const glm::tvec3<float> light_color)    { m_light_color = light_color; }
 
-    void render(const shader::shader_program &shader, const camera::camera &cam, const glm::mat4 &model) const {
+    void render(const shader::shader &shader, const camera::camera &cam, const glm::mat4 &model) const {
         glCullFace(GL_FRONT);
 
         shader.use();
