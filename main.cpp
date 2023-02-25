@@ -145,7 +145,7 @@ int main(int argc, char *argv[]) {
     cam.set_FOV     (CAMERA_FOV);
     cam.set_position({0.0f, 0.0f, -2.0f});
 
-    shader::shader dragon_shader {"./glsl/dragon_vertex.glsl", "./glsl/dragon_fragment.glsl"};
+    shader::shader_program dragon_shader {"./glsl/dragon_vertex.glsl", "./glsl/dragon_fragment.glsl"};
 
     dragon::dragon my_dragon {};
 
@@ -172,7 +172,7 @@ int main(int argc, char *argv[]) {
 
             model = rotate(model, glm::radians<float>(glfwGetTime() * 45.0f), {0.0f, 1.0f, 0.0f});
 
-            my_dragon.render(dragon_shader, cam, model);
+            my_dragon.render(model, dragon_shader, cam);
 
             glfwSwapBuffers(window);
             glfwPollEvents();
