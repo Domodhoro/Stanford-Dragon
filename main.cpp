@@ -132,7 +132,6 @@ int main(int argc, char *argv[]) {
     const auto window_pos_y {(mode->height - WINDOW_HEIGHT) / 2};
 
     glfwSetWindowPos(window, window_pos_x, window_pos_y);
-
     glfwSetCursorPos(window, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
 
     load_window_icon(window, "./img/icon.bmp");
