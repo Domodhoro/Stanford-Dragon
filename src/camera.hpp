@@ -4,8 +4,6 @@
 namespace camera {
 
 struct camera {
-    camera() = default;
-
     camera(const int width, const int height) : aspect {static_cast<float>(width) / static_cast<float>(height)} {}
 
     void disable_cursor(GLFWwindow *window) const { glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); }

@@ -1,27 +1,3 @@
-/*
-    MIT License
-
-    Copyright (c) 2023 Guilherme M. Aguiar (guilhermemaguiar2022@gmail.com)
-
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
-*/
-
 #ifdef __cplusplus
 
 extern "C" {
@@ -33,6 +9,11 @@ extern "C" {
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "./lib/stb_image.h"
+
+#include "./lualib/luaconf.h"
+#include "./lualib/lua.h"
+#include "./lualib/lualib.h"
+#include "./lualib/lauxlib.h"
 }
 
 #endif
@@ -46,17 +27,6 @@ extern "C" {
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-struct my_exception {
-    my_exception(const char *file, int line, const char *description) {
-        puts  ("Ops! Uma falha ocorreu.");
-        printf("File:        %s\n", file);
-        printf("Line:        %i\n", line);
-        printf("Description: %s\n", description);
-    }
-
-    ~my_exception() { exit(EXIT_FAILURE); }
-};
-
 constexpr auto FPS           {60};
 constexpr auto WINDOW_WIDTH  {800};
 constexpr auto WINDOW_HEIGHT {500};
@@ -64,16 +34,9 @@ constexpr auto WINDOW_TITLE  {"Stanford Dragon"};
 constexpr auto CAMERA_FOV    {72.0f};
 
 template<typename T>
-struct vec3 {
-    T x;
-    T y;
-    T z;
-};
-
-template<typename T>
-struct vec3_n {
-    vec3<T> v;
-    vec3<T> n;
+struct vertex {
+    glm::tvec3<T> position;
+    glm::tvec3<T> normal;
 };
 
 enum struct CAMERA_MOVEMENTS : int {
@@ -83,23 +46,30 @@ enum struct CAMERA_MOVEMENTS : int {
     LEFT
 };
 
+static void error_log(const char *file, const int line, const char *description) {
+    puts  ("A failure occurred!");
+    printf("File:        %s.\n", file);
+    printf("Line:        %i.\n", line);
+    printf("Description: %s.\n", description);
+
+    exit(EXIT_FAILURE);
+}
+
+#include "./src/lua_script.hpp"
 #include "./src/camera.hpp"
+#include "./src/shader.hpp"
+#include "./src/mesh.hpp"
 #include "./src/dragon.hpp"
 
-static void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
-    glViewport(0, 0, width, height);
-}
-
-static void keyboard_callback(GLFWwindow *window) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
-}
+static void framebuffer_size_callback(GLFWwindow *window, int width, int height) { glViewport(0, 0, width, height); }
+static void keyboard_callback        (GLFWwindow *window)                        { if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true); }
 
 static void load_window_icon(GLFWwindow *window, const char *icon_path) {
     GLFWimage img;
 
     img.pixels = stbi_load(icon_path, &img.width, &img.height, 0, 4);
 
-    if (img.pixels == nullptr) my_exception {__FILE__, __LINE__, "falha ao carregar Ã­cone da janela de visualizaÃ§Ã£o"};
+    if (img.pixels == nullptr) error_log(__FILE__, __LINE__, "falha ao carregar ícone da janela de visualização");
 
     glfwSetWindowIcon(window, 1, &img);
 
@@ -109,19 +79,20 @@ static void load_window_icon(GLFWwindow *window, const char *icon_path) {
 int main(int argc, char *argv[]) {
     puts(argv[0]);
 
-    if (glfwInit() == GLFW_NOT_INITIALIZED) my_exception {__FILE__, __LINE__, "falha ao iniciar o GLFW"};
+    lua_script::lua_script lua("./script.lua");
+
+    if (glfwInit() == GLFW_NOT_INITIALIZED) error_log(__FILE__, __LINE__, "falha ao iniciar o GLFW");
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_DECORATED, true);
     glfwWindowHint(GLFW_RESIZABLE, false);
 
     auto window {
         glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, nullptr, nullptr)
     };
 
-    if (window == nullptr) my_exception {__FILE__, __LINE__, "falha ao criar a janela de visualizaÃ§Ã£o"};
+    if (window == nullptr) error_log(__FILE__, __LINE__, "falha ao criar a janela de visualização");
 
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -131,21 +102,20 @@ int main(int argc, char *argv[]) {
     const auto window_pos_x {(mode->width  - WINDOW_WIDTH)  / 2};
     const auto window_pos_y {(mode->height - WINDOW_HEIGHT) / 2};
 
-    glfwSetWindowPos(window, window_pos_x, window_pos_y);
-    glfwSetCursorPos(window, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+    glfwSetWindowPos(window, 100, 100);
 
     load_window_icon(window, "./img/icon.bmp");
 
     glewExperimental = true;
 
-    if (glewInit() != GLEW_OK) my_exception {__FILE__, __LINE__, "falha ao iniciar GLEW"};
+    if (glewInit() != GLEW_OK) error_log(__FILE__, __LINE__, "falha ao iniciar GLEW");
 
     camera::camera cam {WINDOW_WIDTH, WINDOW_HEIGHT};
 
     cam.set_FOV     (CAMERA_FOV);
     cam.set_position({0.0f, 0.0f, -2.0f});
 
-    shader::shader_program dragon_shader {"./glsl/dragon_vertex.glsl", "./glsl/dragon_fragment.glsl"};
+    shader::shader_program shader {"./glsl/dragon_vertex.glsl", "./glsl/dragon_fragment.glsl"};
 
     dragon::dragon my_dragon {};
 
@@ -163,19 +133,20 @@ int main(int argc, char *argv[]) {
         current_frame = glfwGetTime();
 
         if ((current_frame - last_frame) > (1.0f / FPS)) {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glClear     (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
 
             keyboard_callback(window);
 
-            auto model {glm::mat4(1.0f)};
+            glm::mat4 model {1.0f};
 
             model = rotate(model, glm::radians<float>(glfwGetTime() * 45.0f), {0.0f, 1.0f, 0.0f});
 
-            my_dragon.render(model, dragon_shader, cam);
+            my_dragon.render(model, shader, cam);
 
-            glfwSwapBuffers(window);
-            glfwPollEvents();
+            glfwSwapBuffers (window);
+            glfwPollEvents  ();
+            glfwSetWindowPos(window, window_pos_x, window_pos_y);
 
             last_frame = current_frame;
         }

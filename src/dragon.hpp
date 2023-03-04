@@ -1,9 +1,6 @@
 #ifndef DRAGON_HPP
 #define DRAGON_HPP
 
-#include "./mesh.hpp"
-#include "./shader.hpp"
-
 namespace dragon {
 
 struct dragon {
@@ -51,15 +48,15 @@ protected:
         glBindVertexArray(VAO);
 
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, mesh.get_vertice().size() * sizeof(vec3_n<float>), &mesh.get_vertice().at(0), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, mesh.get_vertice().size() * sizeof(vertex<float>), &mesh.get_vertice().at(0), GL_STATIC_DRAW);
 
-        glVertexAttribPointer    (0, 3, GL_FLOAT, false, sizeof(vec3_n<float>), (void*)(0 * sizeof(float)));
+        glVertexAttribPointer    (0, 3, GL_FLOAT, false, sizeof(vertex<float>), (void*)(0 * sizeof(float)));
         glEnableVertexAttribArray(0);
 
-        glVertexAttribPointer    (1, 3, GL_FLOAT, false, sizeof(vec3_n<float>), (void*)(3 * sizeof(float)));
+        glVertexAttribPointer    (1, 3, GL_FLOAT, false, sizeof(vertex<float>), (void*)(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
 
-        if (VAO == 0u) my_exception {__FILE__, __LINE__, "falha ao criar VAO"};
+        if (VAO == 0u) error_log(__FILE__, __LINE__, "falha ao criar VAO");
 
         glBindVertexArray(0);
     }

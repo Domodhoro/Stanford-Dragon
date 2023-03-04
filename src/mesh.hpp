@@ -5,21 +5,21 @@ namespace mesh {
 
 struct mesh {
     mesh(const char *meshPath) : file {fopen(meshPath, "r")} {
-        if (file == nullptr) my_exception {__FILE__, __LINE__, "falha ao abrir arquivo 'dragon.obj'"};
+        if (file == nullptr) error_log(__FILE__, __LINE__, "falha ao abrir arquivo 'dragon.obj'");
 
         while (true) {
-            char line[128];
+            char line[128] = {};
 
             if (fscanf(file, "%s", line) == EOF) break;
 
             if (strcmp(line, "v") == 0) {
-                vec3<float> vertex {0.0f, 0.0f, 0.0f};
+                glm::tvec3<float> vertex {0.0f, 0.0f, 0.0f};
 
                 fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
 
                 temp_vertex.emplace_back(vertex);
             } else if (strcmp(line, "vn") == 0) {
-                vec3<float> normal {0.0f, 0.0f, 0.0f};
+                glm::tvec3<float> normal {0.0f, 0.0f, 0.0f};
 
                 fscanf(file, "%f %f %f\n", &normal.x, &normal.y, &normal.z);
 
@@ -39,13 +39,9 @@ struct mesh {
         }
 
         for(auto i = 0; i != static_cast<int>(indice.size()); ++i) {
-            const vec3_n<float> vertex {
-                temp_vertex.at(indice.at(i) - 1).x,
-                temp_vertex.at(indice.at(i) - 1).y,
-                temp_vertex.at(indice.at(i) - 1).z,
-                temp_normal.at(indice.at(i) - 1).x,
-                temp_normal.at(indice.at(i) - 1).y,
-                temp_normal.at(indice.at(i) - 1).z
+            const vertex<float> vertex {
+                temp_vertex.at(indice.at(i) - 1),
+                temp_normal.at(indice.at(i) - 1)
             };
 
             vertice.emplace_back(vertex);
@@ -59,16 +55,16 @@ struct mesh {
         temp_normal.clear();
     }
 
-    std::vector<vec3_n<float>> get_vertice() const { return vertice; }
+    std::vector<vertex<float>> get_vertice() const { return vertice; }
     std::vector<unsigned int> get_indice  () const { return indice; }
 
 protected:
     FILE *file {nullptr};
 
-    std::vector<vec3<float>>   temp_vertex;
-    std::vector<vec3<float>>   temp_normal;
-    std::vector<vec3_n<float>> vertice;
-    std::vector<unsigned int>  indice;
+    std::vector<glm::tvec3<float>> temp_vertex;
+    std::vector<glm::tvec3<float>> temp_normal;
+    std::vector<vertex<float>>     vertice;
+    std::vector<unsigned int>      indice;
 };
 
 }
