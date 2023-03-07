@@ -4,6 +4,6 @@ Renderizando o modelo 3D conhecido como "Stanford Dragon".
 
 <div align = center>
 
-<img src = "https://user-images.githubusercontent.com/100392814/219978271-72a04f37-68b0-4947-84b0-111bf059b81e.png" width = 1300 height = 800>
+<img src = "https://user-images.githubusercontent.com/100392814/223495714-f1879936-b95b-4cba-b0a5-90f9228b4f28.png" width = 800 height = 500>
 
 </div>
