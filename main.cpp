@@ -10,15 +10,14 @@ extern "C" {
 #define STB_IMAGE_IMPLEMENTATION
 #include "./lib/stb_image.h"
 
-#include "./lualib/luaconf.h"
-#include "./lualib/lua.h"
-#include "./lualib/lualib.h"
-#include "./lualib/lauxlib.h"
+#include "./lua54/luaconf.h"
+#include "./lua54/lua.h"
+#include "./lua54/lualib.h"
+#include "./lua54/lauxlib.h"
 }
 
 #endif
 
-#include <iostream>
 #include <vector>
 #include <fstream>
 #include <sstream>
@@ -69,7 +68,7 @@ static void load_window_icon(GLFWwindow *window, const char *icon_path) {
 
     img.pixels = stbi_load(icon_path, &img.width, &img.height, 0, 4);
 
-    if (img.pixels == nullptr) error_log(__FILE__, __LINE__, "falha ao carregar ícone da janela de visualização");
+    if (img.pixels == nullptr) error_log(__FILE__, __LINE__, "falha ao carregar Ã­cone da janela de visualizaÃ§Ã£o");
 
     glfwSetWindowIcon(window, 1, &img);
 
@@ -92,7 +91,7 @@ int main(int argc, char *argv[]) {
         glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, nullptr, nullptr)
     };
 
-    if (window == nullptr) error_log(__FILE__, __LINE__, "falha ao criar a janela de visualização");
+    if (window == nullptr) error_log(__FILE__, __LINE__, "falha ao criar a janela de visualizaï¿½ï¿½o");
 
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
